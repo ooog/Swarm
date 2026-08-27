@@ -1,8 +1,6 @@
 import mediapipe as mp
 import cv2
-import time
 
-# from pythonosc.udp_client import UDPClient
 from pythonosc.udp_client import SimpleUDPClient
 from pythonosc import osc_message_builder
 from pythonosc import osc_bundle_builder
@@ -15,35 +13,7 @@ RESULTS = None
 
 def setup_osc_client(ip, port):
     return SimpleUDPClient(ip, port)
-    # return UDPClient(ip, port)
-    return
-    while True:
-        print("send msg")
-        # bundle = osc_bundle_builder.OscBundleBuilder(osc_bundle_builder.IMMEDIATELY)
-        # msg = osc_message_builder.OscMessageBuilder(address='/TEST')
-        # msg.add_arg(1, arg_type='f')
 
-        # # bundle.add_content(msg.build())
-
-        # msg.add_arg(2, arg_type='f')
-        # # bundle.add_content(msg.build())
-
-        # msg.add_arg(3, arg_type='f')
-        # bundle.add_content(msg.build())
-
-        bundle = build_bundle("/left", (2,3,4))
-        client.send(bundle)
-        bundle = build_bundle("/right", (5,4,3))
-        client.send(bundle)
-        # send_message("/test", "YOOOOOO", client)
-        # send_message("/test2", "YOOOOOO))))))))))))", client)
-        # send_message("/test3", 300, client)
-
-        time.sleep(1)
-
-# @app.get("/health")
-# def health():
-#     return {"status": "running"}
 
 def build_bundle(address, pos):
     bundle = osc_bundle_builder.OscBundleBuilder(osc_bundle_builder.IMMEDIATELY)
@@ -59,7 +29,6 @@ def build_message(address, message):
     msg = osc_message_builder.OscMessageBuilder(address=address)
     msg.add_arg(message)
     return msg
-    client.send(msg.build())
 
 
 def capture_and_process_webcam():
@@ -125,7 +94,6 @@ def capture_and_process_webcam():
                     y = float(landmark.y)
                     z = float(landmark.z)
 
-
                     h , w , _ = frame.shape
                     cv2.putText(frame, org=(int(x * w), int(y * h)), color=(0, 0, 255/21 * landmark_index), thickness=2, text=str(landmark_index),fontFace=cv2.FONT_HERSHEY_SIMPLEX,fontScale=0.5)
                     handname = "/hand/{}/{}".format(hand_index, landmark_index)
@@ -137,11 +105,6 @@ def capture_and_process_webcam():
                     bundle.add_content(y_msg.build())
                     bundle.add_content(z_msg.build())
 
-                    # landmark_bundle = build_bundle(handname, (x,y,z))
-                    # hand_bundle.add_content(landmark_bundle)
-                    # bundle.add_content(landmark_bundle) #DO THIS INSTEAD OF A NESTED BUNDLE
-
-                # bundle.add_content(hand_bundle.build())
             client.send(bundle.build())
         else:
             msg = build_message("/health", 1)
