@@ -84,23 +84,29 @@ def capture_and_process_webcam():
 
             for hand_index in range(len(RESULTS.hand_landmarks)):
                 hand = RESULTS.hand_landmarks[hand_index]
+                world_hand = RESULTS.hand_world_landmarks[hand_index]
                 hand_bundle = osc_bundle_builder.OscBundleBuilder(osc_bundle_builder.IMMEDIATELY)
 
                 for landmark_index in range(len(hand)):
                     landmark = hand[landmark_index]
+                    world_landmark = world_hand[landmark_index]
                     print("{}, {}: {}".format(hand_index, landmark_index, landmark))
 
                     x = float(landmark.x)
                     y = float(landmark.y)
                     z = float(landmark.z)
 
+                    world_x = float(world_landmark.x)
+                    world_y = float(world_landmark.y)
+                    world_z = float(world_landmark.z)
+
                     h , w , _ = frame.shape
                     cv2.putText(frame, org=(int(x * w), int(y * h)), color=(0, 0, 255/21 * landmark_index), thickness=2, text=str(landmark_index),fontFace=cv2.FONT_HERSHEY_SIMPLEX,fontScale=0.5)
                     handname = "/hand/{}/{}".format(hand_index, landmark_index)
 
-                    x_msg = build_message(handname + ".x", x)
-                    y_msg = build_message(handname + ".y", y)
-                    z_msg = build_message(handname + ".z", z)
+                    x_msg = build_message(handname + ".x", world_x)
+                    y_msg = build_message(handname + ".y", world_y)
+                    z_msg = build_message(handname + ".z", world_z)
                     bundle.add_content(x_msg.build())
                     bundle.add_content(y_msg.build())
                     bundle.add_content(z_msg.build())
